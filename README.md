@@ -1,6 +1,6 @@
 # Oracle Cloud A1.Flex Auto-Launcher
 
-Retries launching a free-tier `VM.Standard.A1.Flex` instance every 5 minutes
+Retries launching a free-tier `VM.Standard.A1.Flex` instance every 30 minutes
 via GitHub Actions, until OCI has capacity. Emails you (via Gmail) the moment
 it succeeds, and won't try again afterward (it checks for an existing
 instance with the same display name first).
@@ -77,7 +77,7 @@ Actions → New repository secret** and add:
 ## 5. Enable the workflow
 
 The workflow at [.github/workflows/launch.yml](.github/workflows/launch.yml)
-runs on a `*/5 * * * *` cron schedule once it's on the default branch of a
+runs on a `*/30 * * * *` cron schedule once it's on the default branch of a
 GitHub repo (scheduled workflows only run from the default branch, and
 GitHub disables them automatically after 60 days of repo inactivity — push
 a commit occasionally to keep it alive).
@@ -106,7 +106,7 @@ first one OCI has capacity for:
 5. 1 OCPU / 6 GB
 
 If all five are out of capacity, the run exits cleanly and the cron retries
-5 minutes later. Edit the ladder via `OCI_SHAPE_LADDER` in the workflow — a
+30 minutes later. Edit the ladder via `OCI_SHAPE_LADDER` in the workflow — a
 semicolon-separated list of `ocpus,memory_gb` pairs. Free tier caps you at
 4 OCPUs / 24 GB total across A1.Flex instances.
 

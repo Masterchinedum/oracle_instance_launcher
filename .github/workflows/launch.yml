@@ -2,9 +2,9 @@ name: Try launch OCI A1.Flex instance
 
 on:
   schedule:
-    # Every 5 minutes. GitHub's scheduler is best-effort and can lag during
-    # high load, but this is the tightest practical interval for Actions cron.
-    - cron: "*/5 * * * *"
+    # Every 30 minutes. GitHub's scheduler is best-effort and can lag during
+    # high load.
+    - cron: "*/30 * * * *"
   workflow_dispatch: {} # lets you trigger a manual test run from the Actions tab
 
 # Prevent overlapping runs from racing each other on a launch attempt.
