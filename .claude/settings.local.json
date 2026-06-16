@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('launch_instance.py'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(python3 -m venv .venv)",
+      "Bash(./.venv/bin/pip install *)",
+      "Bash(./.venv/bin/python -c \"import oci; print\\('oci SDK', oci.__version__, 'installed'\\)\")"
+    ]
+  }
+}
