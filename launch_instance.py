@@ -96,6 +96,23 @@ def send_email(subject, body):
     print(f"Sent notification email to {to_addr}")
 
 
+def is_retryable_launch_error(error):
+    code = str(getattr(error, "code", ""))
+    message = (error.message or "") + " " + code
+    lower_message = message.lower()
+
+    is_capacity = (
+        "OutOfCapacity" in code
+        or "out of capacity" in lower_message
+        or "out of host capacity" in lower_message
+    )
+    is_a1_limit = (
+        "service limits were exceeded" in lower_message
+        and "standard-a1" in lower_message
+    )
+    return is_capacity or is_a1_limit
+
+
 def main():
     compartment_id = env("OCI_COMPARTMENT_OCID")
     availability_domain = env("OCI_AVAILABILITY_DOMAIN")
@@ -186,24 +203,17 @@ def main():
             )
             return  # success — stop trying smaller shapes
         except oci.exceptions.ServiceError as e:
-            code = str(getattr(e, "code", ""))
-            message = (e.message or "") + " " + code
-            is_capacity = (
-                "OutOfCapacity" in code
-                or "Out of capacity" in message
-                or "Out of host capacity" in message
-            )
-            if is_capacity:
+            if is_retryable_launch_error(e):
                 print(
-                    f"No capacity for {ocpus:g} OCPUs / {memory_gb:g} GB "
-                    f"({e.status}). Trying next smaller shape..."
+                    f"Launch unavailable for {ocpus:g} OCPUs / {memory_gb:g} GB "
+                    f"({e.status}: {e.message}). Trying next smaller shape..."
                 )
                 continue  # fall back to the next rung of the ladder
             # Unexpected API error: surface it loudly.
             print(f"Unexpected OCI API error ({e.status}): {e.message}", file=sys.stderr)
             sys.exit(1)
 
-    print("No capacity for any shape in the ladder this run. Will retry next cron tick.")
+    print("No usable shape in the ladder this run. Will retry next cron tick.")
 
 
 if __name__ == "__main__":

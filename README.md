@@ -105,7 +105,9 @@ first one OCI has capacity for:
 4. 2 OCPUs / 6 GB
 5. 1 OCPU / 6 GB
 
-If all five are out of capacity, the run exits cleanly and the cron retries
+If OCI reports either out-of-capacity or that a requested A1 rung exceeds your
+current A1 service limits, the script falls through to the next smaller rung in
+the same run. If no rung is usable, the run exits cleanly and the cron retries
 30 minutes later. Edit the ladder via `OCI_SHAPE_LADDER` in the workflow — a
 semicolon-separated list of `ocpus,memory_gb` pairs. Free tier caps you at
 4 OCPUs / 24 GB total across A1.Flex instances.
